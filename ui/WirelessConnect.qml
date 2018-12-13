@@ -10,6 +10,11 @@ Mycroft.Delegate {
     id: networkPasswordScreen
     skillBackgroundSource: "http://www.baltana.com/files/wallpapers-1/Plain-Blue-Wallpaper-00476.jpg"
     
+    PlasmaNM.Handler {
+        id: handler
+    }
+
+    
     ColumnLayout{
     anchors.top: parent.top
     anchors.topMargin: Kirigami.Units.largeSpacing
@@ -29,6 +34,7 @@ Mycroft.Delegate {
         }
     
         PlasmaComponents.TextField {
+            id: passField
             property int securityType
             Layout.fillWidth: true
             echoMode: TextInput.Password
@@ -41,6 +47,10 @@ Mycroft.Delegate {
                                         /^(?:.{8,64}){1}$/
                                     }
                             }
+                            
+            onAccepted: {
+                 handler.addAndActivateConnection(sessionData.DevicePath, sessionData.SpecificPath, passField.text)
+            }
         }
     }
 }

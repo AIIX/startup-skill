@@ -41,6 +41,6 @@ Mycroft.ScrollableDelegate {
         model: appletProxyModel
         currentIndex: -1
         boundsBehavior: Flickable.StopAtBounds
-        delegate: ConnectionItem { }
+        delegate: NetworkItem{}
     }
 }

@@ -33,12 +33,9 @@ Kirigami.AbstractCard {
 
     property bool activating: model.ConnectionState == PlasmaNM.Enums.Activating
     property int  baseHeight: Math.max(units.iconSizes.medium, connectionNameLabel.height + connectionStatusLabel.height) + Math.round(units.gridUnit / 2)
-    property bool expanded: visibleDetails || visiblePasswordDialog
     property bool predictableWirelessPassword: !model.Uuid && model.Type == PlasmaNM.Enums.Wireless &&
                                                (model.SecurityType == PlasmaNM.Enums.StaticWep || model.SecurityType == PlasmaNM.Enums.WpaPsk ||
                                                 model.SecurityType == PlasmaNM.Enums.Wpa2Psk)
-    property bool visibleDetails: false
-    property bool visiblePasswordDialog: false
     enabled: true
     
     contentItem: Item {
@@ -95,118 +92,23 @@ Kirigami.AbstractCard {
                     text: itemText()
                 }
             }
-
-            PlasmaComponents.BusyIndicator {
-                id: connectingIndicator
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                Layout.fillHeight: true
-                running: !stateChangeButton.visible && model.ConnectionState == PlasmaNM.Enums.Activating
-                visible: running
-                opacity: visible
-            }
-
-            PlasmaComponents.Button {
-                id: stateChangeButton
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                opacity: connectionView.currentVisibleButtonIndex == index ? 1 : 0
-                visible: opacity != 0
-                text: (model.ConnectionState == PlasmaNM.Enums.Deactivated) ? i18n("Connect") : i18n("Disconnect")
-
-                Behavior on opacity { NumberAnimation { duration: units.shortDuration } }
-
-                onClicked: changeState()
-            }
-        }
-
-        PlasmaCore.SvgItem {
-            id: separator
-            height: lineSvg.elementSize("horizontal-line").height
-            Layout.fillWidth: true
-            Layout.maximumHeight: height
-            elementId: "horizontal-line"
-            svg: PlasmaCore.Svg { id: lineSvg; imagePath: "widgets/line" }
-            visible: connectionItem.expanded
-            opacity: visible
-        }
-
-        Loader {
-            id: expandableComponentLoader
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            height: childrenRect.height
         }
     }
 }
 
-    states: [
-        State {
-            name: "collapsed"
-            when: !(visibleDetails || visiblePasswordDialog)
-            StateChangeScript { script: if (expandableComponentLoader.status == Loader.Ready) {expandableComponentLoader.sourceComponent = undefined} }
-        },
-
-        State {
-            name: "expandedDetails"
-            when: visibleDetails
-            StateChangeScript { script: createContent() }
-        },
-
-        State {
-            name: "expandedPasswordDialog"
-            when: visiblePasswordDialog
-            StateChangeScript { script: createContent() }
-            PropertyChanges { target: stateChangeButton; opacity: 1 }
-        }
-    ]
-
-    function createContent() {
-        if (visibleDetails) {
-            expandableComponentLoader.sourceComponent = detailsComponent
-        } else if (visiblePasswordDialog) {
-            expandableComponentLoader.sourceComponent = passwordDialogComponent
-            expandableComponentLoader.item.passwordInput.forceActiveFocus()
-        }
-    }
-
-    function changeState() {
-        visibleDetails = false
-        if (Uuid || !predictableWirelessPassword || visiblePasswordDialog) {
-            if (model.ConnectionState == PlasmaNM.Enums.Deactivated) {
-                if (!predictableWirelessPassword && !Uuid) {
-                    handler.addAndActivateConnection(model.DevicePath, model.SpecificPath)
-                } else if (visiblePasswordDialog) {
-                    if (expandableComponentLoader.item.password != "") {
-                        handler.addAndActivateConnection(model.DevicePath, model.SpecificPath, expandableComponentLoader.item.password)
-                        visiblePasswordDialog = false
-                    } else {
-                        connectionItem.clicked()
-                    }
-                } else {
-                    handler.activateConnection(model.ConnectionPath, model.DevicePath, model.SpecificPath)
-                }
-            } else {
-                handler.deactivateConnection(model.ConnectionPath, model.DevicePath)
-            }
-        } else if (predictableWirelessPassword) {
-            appletProxyModel.dynamicSortFilter = false
-            visiblePasswordDialog = true
-        }
-    }
-
     function itemText() {
         if (model.ConnectionState == PlasmaNM.Enums.Activating) {
-            if (Type == PlasmaNM.Enums.Vpn)
+            if (model.Type == PlasmaNM.Enums.Vpn)
                 return model.VpnState
             else
-                return DeviceState
+                return model.DeviceState
         } else if (model.ConnectionState == PlasmaNM.Enums.Deactivating) {
-            if (Type == PlasmaNM.Enums.Vpn)
+            if (model.Type == PlasmaNM.Enums.Vpn)
                 return model.VpnState
             else
-                return DeviceState
+                return model.DeviceState
         } else if (model.ConnectionState == PlasmaNM.Enums.Deactivated) {
             var result = model.LastUsed
-            console.log(result)
             if (model.SecurityType > PlasmaNM.Enums.NoneSecurity)
                 result += ", " + model.SecurityTypeString
             return result
@@ -216,8 +118,12 @@ Kirigami.AbstractCard {
     }
 
     onActivatingChanged: {
-        if (model.ConnectionState == PlasmaNM.Enums.Activating) {
-            ListView.view.positionViewAtBeginning()
+        console.log("Activating Changed")
+        if (model.ConnectionState == PlasmaNM.Enums.Activated) {
+            Mycroft.MycroftController.sendText("show connected screen");
+        }
+        if (model.ConnectionState == PlasmaNM.Enums.Deactivated) {
+            Mycroft.MycroftController.sendText("show fail screen");
         }
     }
 
@@ -227,6 +133,7 @@ Kirigami.AbstractCard {
             Mycroft.MycroftController.sendRequest("networkConnect.wifi", {"DevicePath": model.DevicePath, "SpecificPath": model.SpecificPath, "ConnectionName": connectionNameLabel.text, "SecurityType": model.SecurityType});
         }
         else if (model.ConnectionState == PlasmaNM.Enums.Deactivated) {
+            Mycroft.MycroftController.sendText("show connecting screen");
             handler.activateConnection(model.ConnectionPath, model.DevicePath, model.SpecificPath)
         }
         else {

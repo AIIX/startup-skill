@@ -49,6 +49,7 @@ Mycroft.Delegate {
                             }
                             
             onAccepted: {
+                 Mycroft.MycroftController.sendText("show connecting screen");
                  handler.addAndActivateConnection(sessionData.DevicePath, sessionData.SpecificPath, passField.text)
             }
         }

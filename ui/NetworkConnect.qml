@@ -8,35 +8,44 @@ import Mycroft 1.0 as Mycroft
 
 Mycroft.Delegate {
     id: networkPasswordScreen
-    skillBackgroundSource: "http://www.baltana.com/files/wallpapers-1/Plain-Blue-Wallpaper-00476.jpg"
+    skillBackgroundSource: "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-black-solid-color-background.jpg"
     
     PlasmaNM.Handler {
         id: handler
     }
-
     
-    ColumnLayout{
-    anchors.top: parent.top
-    anchors.topMargin: Kirigami.Units.largeSpacing
-    anchors.left: parent.left
-    anchors.right: parent.right
-    height: parent.height / 2
-    spacing: Kirigami.Units.smallSpacing
-    
+    Item {
+        id: topArea
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        height: Kirigami.Units.gridUnit * 2
+        
         Kirigami.Heading {
-            id: wirelessPassLabel
-            level: 2
-            text: "Enter Wireless Password For " + sessionData.ConnectionName
-            Layout.fillWidth: true
-            wrapMode: Text.WordWrap;
-            font.bold: true;
-            color: Kirigami.Theme.textColor;
+            id: connectionTextHeading
+            level: 1
+            wrapMode: Text.WordWrap
+            anchors.centerIn: parent
+            font.bold: true
+            text: "Enter Password For " + sessionData.ConnectionName 
+            color: Kirigami.Theme.linkColor
         }
+    }
     
+    Item {
+        anchors.top: topArea.bottom
+        anchors.topMargin: Kirigami.Units.largeSpacing
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        
         PlasmaComponents.TextField {
             id: passField
+            anchors.top: parent.top
+            anchors.topMargin: Kirigami.Units.largeSpacing
+            width: parent.width
+            height: Kirigami.Units.gridUnit * 3
             property int securityType
-            Layout.fillWidth: true
             echoMode: TextInput.Password
             revealPasswordButtonShown: true
             placeholderText: i18n("Password...")

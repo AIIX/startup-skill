@@ -7,6 +7,7 @@ import Mycroft 1.0 as Mycroft
 
 Mycroft.ScrollableDelegate {
     id: networkSelectionView
+    skillBackgroundSource: "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-black-solid-color-background.jpg"
     
     PlasmaNM.NetworkStatus {
         id: networkStatus
@@ -32,15 +33,40 @@ Mycroft.ScrollableDelegate {
         id: appletProxyModel
         sourceModel: connectionModel
     }
+    Item {
+        id: topArea
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        height: Kirigami.Units.gridUnit * 2
         
-    Kirigami.CardsListView {
-        id: connectionView
-        property bool availableConnectionsVisible: true
-        anchors.fill: parent
-        clip: false
-        model: appletProxyModel
-        currentIndex: -1
-        boundsBehavior: Flickable.StopAtBounds
-        delegate: NetworkItem{}
+        Kirigami.Heading {
+            id: connectionTextHeading
+            level: 1
+            wrapMode: Text.WordWrap
+            anchors.centerIn: parent
+            font.bold: true
+            text: "Select Your Wi-Fi"
+            color: Kirigami.Theme.linkColor
+        }
+    }
+
+    Item {
+        anchors.top: topArea.bottom
+        anchors.topMargin: Kirigami.Units.largeSpacing
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        
+        ListView {
+            id: connectionView
+            property bool availableConnectionsVisible: true
+            anchors.fill: parent
+            clip: true
+            model: appletProxyModel
+            currentIndex: -1
+            boundsBehavior: Flickable.StopAtBounds
+            delegate: NetworkItem{}
+        }
     }
 }

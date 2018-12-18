@@ -28,15 +28,15 @@ import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
 import org.kde.kirigami 2.5 as Kirigami
 import Mycroft 1.0 as Mycroft
 
-Kirigami.AbstractCard {
+Kirigami.AbstractListItem {
     id: connectionItem
 
     property bool activating: model.ConnectionState == PlasmaNM.Enums.Activating
+    property bool deactivating: model.ConnectionState == PlasmaNM.Enums.Deactivating
     property int  baseHeight: Math.max(units.iconSizes.medium, connectionNameLabel.height + connectionStatusLabel.height) + Math.round(units.gridUnit / 2)
     property bool predictableWirelessPassword: !model.Uuid && model.Type == PlasmaNM.Enums.Wireless &&
                                                (model.SecurityType == PlasmaNM.Enums.StaticWep || model.SecurityType == PlasmaNM.Enums.WpaPsk ||
                                                 model.SecurityType == PlasmaNM.Enums.Wpa2Psk)
-    enabled: true
     
     contentItem: Item {
             implicitWidth: delegateLayout.implicitWidth;
@@ -69,7 +69,6 @@ Kirigami.AbstractCard {
 
             ColumnLayout {
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                spacing: 0
 
                 PlasmaComponents.Label {
                     id: connectionNameLabel
@@ -114,16 +113,6 @@ Kirigami.AbstractCard {
             return result
         } else if (model.ConnectionState == PlasmaNM.Enums.Activated) {
                 return i18n("Connected")
-        }
-    }
-
-    onActivatingChanged: {
-        console.log("Activating Changed")
-        if (model.ConnectionState == PlasmaNM.Enums.Activated) {
-            Mycroft.MycroftController.sendText("show connected screen");
-        }
-        if (model.ConnectionState == PlasmaNM.Enums.Deactivated) {
-            Mycroft.MycroftController.sendText("show fail screen");
         }
     }
 

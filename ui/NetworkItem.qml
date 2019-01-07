@@ -1,5 +1,5 @@
 /*
-    Copyright 2015-2019 Aditya Mehra <aix.m@outlook.com>
+    Copyright 2017-2019 Aditya Mehra <aix.m@outlook.com>
     Copyright 2013-2017 Jan Grulich <jgrulich@redhat.com>
     
     This library is free software; you can redistribute it and/or
@@ -128,5 +128,10 @@ Kirigami.AbstractListItem {
         else {
             handler.deactivateConnection(model.ConnectionPath, model.DevicePath)
         }
+    }
+    
+    onPressAndHold: {
+        pathToRemove = model.ConnectionPath
+        networkActions.open()
     }
 }

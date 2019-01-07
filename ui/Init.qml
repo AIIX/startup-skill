@@ -7,7 +7,7 @@ import Mycroft 1.0 as Mycroft
 
 Mycroft.Delegate {
     id: initView
-    skillBackgroundSource: "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-black-solid-color-background.jpg"
+    anchors.fill: parent
     
     ColumnLayout {
         anchors.fill: parent

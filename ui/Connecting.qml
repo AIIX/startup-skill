@@ -8,9 +8,10 @@ import Mycroft 1.0 as Mycroft
 import org.kde.lottie 1.0
 
 
-Mycroft.Delegate {
+Item {
     id: connectingView
-    skillBackgroundSource: "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-black-solid-color-background.jpg"
+    //skillBackgroundSource: "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-black-solid-color-background.jpg"
+    anchors.fill: parent
     property int connectedStatus 
     property int disconnectedStatus
     

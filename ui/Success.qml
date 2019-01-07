@@ -8,24 +8,25 @@ import Mycroft 1.0 as Mycroft
 import org.kde.lottie 1.0
 
 
-Mycroft.Delegate {
+Item {
     id: successView
+    anchors.fill: parent
     
     ColumnLayout {
         anchors.fill: parent
-    LottieAnimation {
-        id: l1
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        source: Qt.resolvedUrl("Animations/success.json")
-        loops: 0
-        fillMode: Image.PreserveAspectFit
-        running: true
-        
-        onSourceChanged: {
-            console.log(l1.status)
-        }
-    }    
-  }
+        LottieAnimation {
+            id: l1
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            source: Qt.resolvedUrl("Animations/success.json")
+            loops: 0
+            fillMode: Image.PreserveAspectFit
+            running: true
+            
+            onSourceChanged: {
+                console.log(l1.status)
+            }
+        }    
+    }
 }
  
